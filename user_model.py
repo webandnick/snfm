@@ -1,27 +1,31 @@
-from sqlalchemy import  Column,Integer,String,ForeignKey,Table
+from sqlalchemy import  Column,Integer,String,ForeignKey,Table,MetaData,create_engine
+from sqlalchemy.orm import backref,relationship,mapper,sessionmaker
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/tests.db'
 db = SQLAlchemy(app)
 
 
+metadata = MetaData()
+engine = create_engine("sqlite:///:memory:")
+Session = sessionmaker(bind=engine)
 
 
-class User(db.Model):
-    id = Column(Integer,primary_key=True)
-    name = Column(String(50),unique=True)
-    email = Column(String(50),unique=True)
-    password = Column(String(50))
+user = Table("user",metadata,
+             Column("id",Integer,primary_key=True),
+             Column("name",String(63),unique=True),
+             Column("pwd",String(63))
+             
 
 
-    def __init__(self,name=None,email=None,password=None):
+             )
+
+class User(object):
+    def __init__(self,name):
         self.name = name
-        self.email = email
-        self.password = password
 
-    def __repr__(self):
-        return  "<User: (%s) >" % (str(self.id))
 
 
 

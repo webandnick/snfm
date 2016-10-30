@@ -1,12 +1,10 @@
 from flask import Blueprint,make_response,jsonify,request,g
-import model
+from models import users
+from flask_peewee.db import Database
 
 
 
-def get_db():
-    return model.db.session
-def destroy_db():
-    model.db.session.remove()
+
 
 
 
@@ -19,7 +17,7 @@ class UserApi(MethodView):
     #get the inforamtion of this user /post
     def get(self,userid,*args,**kwargs):
         if userid is None:
-            answer = model.User.query.all()
+            answer = users.User.select().tuples()
             response = make_response(jsonify(answer))
             return response()
         else:
@@ -29,10 +27,9 @@ class UserApi(MethodView):
     #create a new user
     def post(self,*args,**kwargs):#try
         try:
-            user = model.User(name=request.form["name"],email=request.form["email"],password=request.form["password"])#make better
-            get_db().add(user)
-            get_db().commit()
-            get_db().remove()
+
+            users.User().save()
+
 
         except:
             print "error @ post"
@@ -45,10 +42,7 @@ class UserApi(MethodView):
     #update the informatuion of the user
     def update(self,*args,**kwargs):#try
         try:
-            user = model.User(name=request.form["name"],email=request.form["email"],password=request.form["password"])#make better
-            get_db().add(user)
-            get_db().commit()
-            get_db().remove()
+            users.User().save()
 
         except:
             print "error @ post"
@@ -62,7 +56,7 @@ class UserApi(MethodView):
     #delete the user
     def delete(self,*args,**kwargs):
         try:
-            model.User.query.all()
+            users.User.delete()
         except:
             pass#faile
         finally:
